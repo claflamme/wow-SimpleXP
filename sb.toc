@@ -1,0 +1,10 @@
+## Interface: 50100
+## Title: sb
+## Notes: No notes right now.
+## Version: 1.0
+## SavedVariables: sbSettings
+
+functions.lua
+sb.lua
+xp.lua
+config.lua

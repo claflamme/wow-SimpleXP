@@ -53,6 +53,21 @@ function Bootstrap:on(eventName, callback)
 end
 
 ---
+-- A convenience method for the ADDON_LOADED event handler.
+--
+-- @param callback Function to execute when the addon is loaded.
+--
+function Bootstrap:init(callback)
+
+  self:on('ADDON_LOADED', function(addonName)
+    if addonName == self.name then
+      callback()
+    end
+  end)
+
+end
+
+---
 -- Creates all the frames required for a blank addon and returns a table
 -- containing references to all of them.
 --

@@ -1,6 +1,11 @@
 Bootstrap = {}
 Bootstrap.__index = Bootstrap
 
+---
+-- Creates a new addon scaffold.
+--
+-- @param addonName The name of the addon as specified in the .toc file.
+--
 function Bootstrap:new(addonName)
 
   local self = { name = addonName }

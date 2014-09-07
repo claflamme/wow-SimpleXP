@@ -50,20 +50,9 @@ function Bootstrap:__createInitialFrames()
 
   local frames = {}
 
-  frames.event = self:__createEventFrame()
+  -- The frame that all event handlers for this addon will be bound to.
+  frames.event = CreateFrame('Frame', self.name .. 'GlobalEventFrame')
 
   return frames
 
-end
-
----
--- Creates a new frame for the purpose of assigning event handlers to. All
--- handlers created for this addon will be bound to the frame.
---
--- @param addonName
---
--- @return Frame
---
-function Bootstrap:__createEventFrame()
-  return CreateFrame('Frame', self.name .. 'GlobalEventFrame');
 end

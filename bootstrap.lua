@@ -9,7 +9,7 @@ function Bootstrap:new(addonName)
 
   -- Create the initial set of frames for a blank addon. Includes a namespaced
   -- event frame for registering event listeners to.
-  self.Frames = self:createInitialFrames(self.name)
+  self.Frames = self:__createInitialFrames()
 
   self.EventHandlers = {}
 
@@ -46,11 +46,11 @@ end
 --
 -- @return Table
 --
-function Bootstrap:createInitialFrames()
+function Bootstrap:__createInitialFrames()
 
   local frames = {}
 
-  frames.event = self:createEventFrame()
+  frames.event = self:__createEventFrame()
 
   return frames
 
@@ -64,6 +64,6 @@ end
 --
 -- @return Frame
 --
-function Bootstrap:createEventFrame()
+function Bootstrap:__createEventFrame()
   return CreateFrame('Frame', self.name .. 'GlobalEventFrame');
 end

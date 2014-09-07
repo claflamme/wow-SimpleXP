@@ -36,10 +36,19 @@ function Bootstrap:on(eventName, callback)
     self.EventHandlers[eventName] = {}
   end
 
+  -- Add the handler to the array for its respective event name. table.insert()
+  -- doesn't work but the WoW API provides tinsert() which is the same thing.
   tinsert(self.EventHandlers[eventName], callback)
 
   self.Frames.event:RegisterEvent(eventName)
-  self.Frames.event:SetScript('OnEvent', callback);
+
+  -- When a registered event is triggered, go through the array of handlers for
+  -- that event and execute each one in turn.
+  self.Frames.event:SetScript('OnEvent', function(eventFrame, eventName, ...)
+    for _, handler in pairs(self.EventHandlers[eventName]) do
+      handler(...)
+    end
+  end);
 
 end
 

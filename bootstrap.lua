@@ -1,4 +1,4 @@
-Bootstrap = {}
+Bootstrap = { EventHandlers = {} }
 Bootstrap.__index = Bootstrap
 
 ---
@@ -15,8 +15,6 @@ function Bootstrap:new(addonName)
   -- Create the initial set of frames for a blank addon. Includes a namespaced
   -- event frame for registering event listeners to.
   self.Frames = self:__createInitialFrames()
-
-  self.EventHandlers = {}
 
   return self
 
@@ -42,12 +40,9 @@ function Bootstrap:on(eventName, callback)
 
   self.Frames.event:RegisterEvent(eventName)
 
-  -- When a registered event is triggered, go through the array of handlers for
-  -- that event and execute each one in turn.
+  -- When a registered event is triggered, dispatch all handlers for it.
   self.Frames.event:SetScript('OnEvent', function(eventFrame, eventName, ...)
-    for _, handler in pairs(self.EventHandlers[eventName]) do
-      handler(...)
-    end
+    self:__dispatch(eventName, ...)
   end);
 
 end
@@ -83,5 +78,18 @@ function Bootstrap:__createInitialFrames()
   frames.event = CreateFrame('Frame', self.name .. 'GlobalEventFrame')
 
   return frames
+
+end
+
+---
+-- Goes through all of the registered handlers for a given event and executes
+-- them in sequence.
+--
+-- @param eventName
+function Bootstrap:__dispatch(eventName, ...)
+
+  for _, handler in pairs(self.EventHandlers[eventName]) do
+    handler(...)
+  end
 
 end

@@ -33,7 +33,7 @@ function Bootstrap:on(eventName, callback)
 
   local handler = { callback = callback }
 
-  eventName, handler.namespace = strsplit('.', eventName)
+  eventName, handler.namespace = self:__parseEventName(eventName)
 
   -- Event handlers are grouped together in arrays by the type of event they
   -- respond to. If an array for that event type doesn't exist, then create it.
@@ -100,4 +100,17 @@ function Bootstrap:__dispatch(eventName, ...)
     handler.callback(...)
   end
 
+end
+
+---
+-- Splits a namespaced event name in to its two parts. If the event name is not
+-- namespaced, the return value for namespace will be nil.
+--
+-- @param eventName
+--
+-- @return eventName
+-- @return namespace
+--------------------------------------------------------------------------------
+function Bootstrap:__parseEventName(eventName)
+  return strsplit('.', eventName)
 end

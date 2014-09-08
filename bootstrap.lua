@@ -1,4 +1,4 @@
-Bootstrap = { EventHandlers = {} }
+Bootstrap = {}
 Bootstrap.__index = Bootstrap
 
 ---
@@ -8,7 +8,7 @@ Bootstrap.__index = Bootstrap
 --
 function Bootstrap:new(addonName)
 
-  local self = { name = addonName }
+  local self = { name = addonName, EventHandlers = {} }
 
   setmetatable(self, Bootstrap);
 
@@ -22,11 +22,18 @@ end
 
 ---
 -- Registers an event handler for a given event name and callback function.
+-- Events can be namespaced by adding a dot followed by the namespace to the
+-- event name. E.g. 'ADDON_LOADED.sampleNamespace'. This makes it easier to
+-- remove event handlers later on.
 --
 -- @param eventName
 -- @param callback
 --
 function Bootstrap:on(eventName, callback)
+
+  local handler = { callback = callback }
+
+  eventName, handler.namespace = strsplit('.', eventName)
 
   -- Event handlers are grouped together in arrays by the type of event they
   -- respond to. If an array for that event type doesn't exist, then create it.
@@ -36,7 +43,7 @@ function Bootstrap:on(eventName, callback)
 
   -- Add the handler to the array for its respective event name. table.insert()
   -- doesn't work but the WoW API provides tinsert() which is the same thing.
-  tinsert(self.EventHandlers[eventName], callback)
+  tinsert(self.EventHandlers[eventName], handler)
 
   self.Frames.event:RegisterEvent(eventName)
 
@@ -89,7 +96,7 @@ end
 function Bootstrap:__dispatch(eventName, ...)
 
   for _, handler in pairs(self.EventHandlers[eventName]) do
-    handler(...)
+    handler.callback(...)
   end
 
 end

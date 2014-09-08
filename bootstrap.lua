@@ -5,7 +5,7 @@ Bootstrap.__index = Bootstrap
 -- Creates a new addon scaffold.
 --
 -- @param addonName The name of the addon as specified in the .toc file.
---
+--------------------------------------------------------------------------------
 function Bootstrap:new(addonName)
 
   local self = { name = addonName, EventHandlers = {} }
@@ -28,7 +28,7 @@ end
 --
 -- @param eventName
 -- @param callback
---
+--------------------------------------------------------------------------------
 function Bootstrap:on(eventName, callback)
 
   local handler = { callback = callback }
@@ -58,7 +58,7 @@ end
 -- A convenience method for the ADDON_LOADED event handler.
 --
 -- @param callback Function to execute when the addon is loaded.
---
+--------------------------------------------------------------------------------
 function Bootstrap:init(callback)
 
   self:on('ADDON_LOADED', function(addonName)
@@ -76,7 +76,7 @@ end
 -- @param addonName
 --
 -- @return Table
---
+--------------------------------------------------------------------------------
 function Bootstrap:__createInitialFrames()
 
   local frames = {}
@@ -93,6 +93,7 @@ end
 -- them in sequence.
 --
 -- @param eventName
+--------------------------------------------------------------------------------
 function Bootstrap:__dispatch(eventName, ...)
 
   for _, handler in pairs(self.EventHandlers[eventName]) do

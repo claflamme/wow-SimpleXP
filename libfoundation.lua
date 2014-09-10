@@ -1,16 +1,23 @@
-Bootstrap = {}
-Bootstrap.__index = Bootstrap
+-- Whenever WoW loads and runs a .lua file, it passes in two parameters which
+-- can be accessed via the ... token:
+local currentAddonName, addonTable = ...
+
+local Foundation = {}
+Foundation.__index = Foundation
 
 ---
 -- Creates a new addon scaffold.
 --
 -- @param addonName The name of the addon as specified in the .toc file.
 --------------------------------------------------------------------------------
-function Bootstrap:new(addonName)
+function Foundation:new()
 
-  local self = { name = addonName, EventHandlers = {} }
+  local self = {
+    name = currentAddonName,
+    EventHandlers = {}
+  }
 
-  setmetatable(self, Bootstrap);
+  setmetatable(self, Foundation);
 
   -- Create the initial set of frames for a blank addon. Includes a namespaced
   -- event frame for registering event listeners to.
@@ -29,7 +36,7 @@ end
 -- @param eventName
 -- @param callback
 --------------------------------------------------------------------------------
-function Bootstrap:on(eventName, callback)
+function Foundation:on(eventName, callback)
 
   local handler = { callback = callback }
 
@@ -58,14 +65,18 @@ end
 -- A convenience method for the ADDON_LOADED event handler.
 --
 -- @param callback Function to execute when the addon is loaded.
+--
+-- @return Foundation
 --------------------------------------------------------------------------------
-function Bootstrap:init(callback)
+function Foundation:init(callback)
 
   self:on('ADDON_LOADED', function(addonName)
     if addonName == self.name then
       callback()
     end
   end)
+
+  return self
 
 end
 
@@ -77,7 +88,7 @@ end
 --
 -- @return Table
 --------------------------------------------------------------------------------
-function Bootstrap:__createInitialFrames()
+function Foundation:__createInitialFrames()
 
   local frames = {}
 
@@ -94,7 +105,7 @@ end
 --
 -- @param eventName
 --------------------------------------------------------------------------------
-function Bootstrap:__dispatch(eventName, ...)
+function Foundation:__dispatch(eventName, ...)
 
   for _, handler in pairs(self.EventHandlers[eventName]) do
     handler.callback(...)
@@ -111,6 +122,11 @@ end
 -- @return eventName
 -- @return namespace
 --------------------------------------------------------------------------------
-function Bootstrap:__parseEventName(eventName)
+function Foundation:__parseEventName(eventName)
   return strsplit('.', eventName)
 end
+
+function Foundation:__unregisterNamespacedEvent(namespace, eventName)
+end
+
+addonTable.Foundation = Foundation:new()

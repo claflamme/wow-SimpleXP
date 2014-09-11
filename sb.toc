@@ -1,7 +1,6 @@
 ## Interface: 50400
 ## Title: Simple XP
-## Notes: No notes right now.
-## Version: 1.0
+## Version: 0.1.0
 ## SavedVariables: sbSettings
 
 libfoundation.lua

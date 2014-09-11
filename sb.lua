@@ -2,53 +2,9 @@ sb = {};
 sb.main = {};
 sb.xp = {};
 
-function sb.main:loadModule()
-    self.registerEvents();
-end
+local currentAddonName, addonTable = ...
 
-function sb.main:registerEvents()
-
-    sb.main.eventFrame = CreateFrame("Frame", "sbGlobalEventFrame");
-    sb.main.events = {};
-
-    function sb.main.events:ADDON_LOADED(addonName)
-        if addonName == "sb" then
-            if not sbSettings then
-                sb.main.createInitialSettings();
-            end
-            sb.main:loadCompleteAddon();
-        end
-    end
-
-    function sb.main.events:CINEMATIC_START()
-        sb.xp:hide();
-    end
-
-    function sb.main.events:CINEMATIC_STOP()
-        sb.xp:show();
-    end
-
-    function sb.main.events:VEHICLE_ENTERED(unitId)
-        if unitId == "player" then
-            sb.xp:Hide();
-        end
-    end
-
-    function sb.main.events:VEHICLE_EXITED(unitId)
-        if unitId == "player" then
-            sb.xp:Show();
-        end
-    end
-
-    sb.main.eventFrame:SetScript("OnEvent", function(self, eventName, ...)
-        sb.main.events[eventName](self, ...);
-    end);
-
-    for event in pairs(sb.main.events) do
-        sb.main.eventFrame:RegisterEvent(event);
-    end
-
-end
+SimpleXP = addonTable.Foundation
 
 function sb.main:createInitialSettings()
     sbSettings = {
@@ -72,10 +28,3 @@ function sb.main:createInitialSettings()
         }
     };
 end
-
-function sb.main:loadCompleteAddon()
-    sb.xp:loadModule();
-    -- sb.config:loadModule();
-end
-
-sb.main:loadModule();

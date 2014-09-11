@@ -2,6 +2,7 @@
 -- can be accessed via the ... token:
 local currentAddonName, addonTable = ...
 
+-- This is the table that gets "exported".
 local Foundation = {}
 Foundation.__index = Foundation
 
@@ -58,6 +59,36 @@ function Foundation:on(eventName, callback)
   self.Frames.event:SetScript('OnEvent', function(eventFrame, eventName, ...)
     self:__dispatch(eventName, ...)
   end);
+
+end
+
+---
+-- Unregisters events. You can use it to remove all handlers for a given event,
+-- all handlers in a given namespace, or both.
+--
+-- @param eventName
+--------------------------------------------------------------------------------
+function Foundation:off(eventName)
+
+  local eventName, namespace = self:__parseEventName(eventName)
+
+  -- Remove all handlers for a given event.
+  if namespace == nil then
+
+    self.EventHandlers[eventName] = nil
+    self.Frames.event:UnregisterEvent(eventName)
+
+  -- Remove all handlers using a given namespace.
+  elseif eventName == '' and namespace ~= nil then
+
+    self:__unregisterNamespace(namespace)
+
+  -- Remove all handlers for a given event that have a given namespace.
+  elseif eventName ~= '' and namespace ~= nil then
+
+    self:__unregisterNamespacedEvent(eventName, namespace)
+
+  end
 
 end
 
@@ -126,7 +157,35 @@ function Foundation:__parseEventName(eventName)
   return strsplit('.', eventName)
 end
 
-function Foundation:__unregisterNamespacedEvent(namespace, eventName)
+---
+-- Unregisters all event handlers that use a given namespace.
+--
+-- @param namespace
+--------------------------------------------------------------------------------
+function Foundation:__unregisterNamespace(namespace)
+
+  for eventName, _ in pairs(self.EventHandlers) do
+    self:__unregisterNamespacedEvent(eventName, namespace)
+  end
+
+end
+
+---
+-- Unregisters any handlers for [eventName] that use the given namespace.
+--
+-- @param eventName
+-- @param namespace
+--------------------------------------------------------------------------------
+function Foundation:__unregisterNamespacedEvent(eventName, namespace)
+
+  for i, handler in ipairs(self.EventHandlers[eventName]) do
+
+    if (handler.namespace == namespace) then
+      self.EventHandlers[eventName][i] = nil
+    end
+
+  end
+
 end
 
 addonTable.Foundation = Foundation:new()

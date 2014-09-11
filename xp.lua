@@ -4,7 +4,6 @@ function sb.xp:loadModule()
 	self.xpText, self.repText = "";
 
 	self:createFrames();
-	self:registerEvents();
 
 end
 
@@ -47,46 +46,6 @@ function sb.xp:createFrames()
 	self.tooltip:SetFont(sbSettings.xp.font, sbSettings.xp.fontSize, "OUTLINE");
 	self.tooltip:SetText("Oh great it's broken. How did you even break this? Shit.");
 	self.tooltip:Hide();
-
-end
-
-function sb.xp:registerEvents()
-
-	-- Create a dummy frame to handle game events
-	sb.xp.eventFrame = CreateFrame("Frame");
-
-	-- Store all the events in here
-	sb.xp.events = {};
-
-	function sb.xp.events:PLAYER_ENTERING_WORLD(...)
-		sb.xp:updateXpBar();
-		sb.xp:updateRepBar();
-	end
-
-	function sb.xp.events:PLAYER_XP_UPDATE(...)
-		if select(1, ...) == "player" then
-			sb.xp:updateXpBar();
-		end
-	end
-
-	function sb.xp.events:UPDATE_EXHAUSTION(...)
-		sb.xp:updateXpBar();
-	end
-
-	function sb.xp.events:UPDATE_FACTION(...)
-		sb.xp:updateRepBar();
-	end
-
-	-- When an event is called for the frame, trigger the function
-	-- called "event:EVENT_NAME()"
-	sb.xp.eventFrame:SetScript("OnEvent", function(self, eventName, ...)
-		sb.xp.events[eventName](self, ...);
-	end);
-
-	-- Register all events for which handler functions have been defined
-	for event in pairs(sb.xp.events) do
-		sb.xp.eventFrame:RegisterEvent(event);
-	end
 
 end
 

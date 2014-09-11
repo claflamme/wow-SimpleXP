@@ -6,12 +6,36 @@ local currentAddonName, addonTable = ...
 local Foundation = {}
 Foundation.__index = Foundation
 
+-- =============================================================================
+-- Base Functionality
+-- =============================================================================
+
 ---
--- Creates a new addon scaffold.
+-- A convenience method for bootstrapping an addon once its loaded.
+--
+-- @param callback Function to execute when the addon is loaded.
+--
+-- @return Foundation
+--------------------------------------------------------------------------------
+function Foundation:init(callback)
+
+  self:on('ADDON_LOADED', function(addonName)
+    if addonName == self.name then
+      callback()
+    end
+  end)
+
+  return self
+
+end
+
+
+---
+-- Creates a new Foundation instance for use in an addon.
 --
 -- @param addonName The name of the addon as specified in the .toc file.
 --------------------------------------------------------------------------------
-function Foundation:new()
+function Foundation:__new()
 
   local self = {
     name = currentAddonName,
@@ -27,6 +51,29 @@ function Foundation:new()
   return self
 
 end
+
+---
+-- Creates all the frames required for a blank addon and returns a table
+-- containing references to all of them.
+--
+-- @param addonName
+--
+-- @return Table
+--------------------------------------------------------------------------------
+function Foundation:__createInitialFrames()
+
+  local frames = {}
+
+  -- The frame that all event handlers for this addon will be bound to.
+  frames.event = CreateFrame('Frame', self.name .. 'GlobalEventFrame')
+
+  return frames
+
+end
+
+-- =============================================================================
+-- Event Handling
+-- =============================================================================
 
 ---
 -- Registers an event handler for a given event name and callback function.
@@ -93,44 +140,6 @@ function Foundation:off(eventName)
 end
 
 ---
--- A convenience method for the ADDON_LOADED event handler.
---
--- @param callback Function to execute when the addon is loaded.
---
--- @return Foundation
---------------------------------------------------------------------------------
-function Foundation:init(callback)
-
-  self:on('ADDON_LOADED', function(addonName)
-    if addonName == self.name then
-      callback()
-    end
-  end)
-
-  return self
-
-end
-
----
--- Creates all the frames required for a blank addon and returns a table
--- containing references to all of them.
---
--- @param addonName
---
--- @return Table
---------------------------------------------------------------------------------
-function Foundation:__createInitialFrames()
-
-  local frames = {}
-
-  -- The frame that all event handlers for this addon will be bound to.
-  frames.event = CreateFrame('Frame', self.name .. 'GlobalEventFrame')
-
-  return frames
-
-end
-
----
 -- Goes through all of the registered handlers for a given event and executes
 -- them in sequence.
 --
@@ -188,4 +197,4 @@ function Foundation:__unregisterNamespacedEvent(eventName, namespace)
 
 end
 
-addonTable.Foundation = Foundation:new()
+addonTable.Foundation = Foundation:__new()
